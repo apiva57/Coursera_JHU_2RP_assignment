@@ -1,5 +1,6 @@
-## Functions makeCacheMatrix and cacheSolve will cache inverting of the matrix.
-## If function is called for the first time, than invert matrix will be 
+## Functions makeCacheMatrix and cacheSolve will cache result of inverting for 
+## the matrix.
+## If function is called for the first time, than inversed matrix will be 
 ## calculated and stored in the cache. If inversion of the same matrix is needed 
 ## again than cached matrix will be return instead of doing all calculations
 ## again.
@@ -25,7 +26,7 @@ makeCacheMatrix <- function(x = matrix()) {
            getInverse = getInverse)
 }
 
-## The cacheSolve function calculates the inverse of the special "matrix" 
+## The cacheSolve function calculates the inverse of the special "matrix" list
 ## created by the function makeCacheMatrix. However, it first checks to see 
 ## if the inverse matrix has already been calculated. If so, it gets the inverse 
 ## from the cache and skips the computation. Otherwise, it calculates the inverse 
@@ -49,6 +50,39 @@ matrix <- rbind (c(1,0,4), c(1,3,4), c(4,1,0))
 ## Let's verify that inverse matrix exist for this one
 solve(matrix)
 
-## Let's call makeCacheMatrix for our matrix
-makeCacheMatrix(matrix)
-cacheSolve(matrix)
+## Let's call makeCacheMatrix for our matrix and verify that if we will call it
+## for a second time than we will be getting cached data
+cacheMatrix <- makeCacheMatrix(matrix)
+cacheSolve(cacheMatrix)
+cacheSolve(cacheMatrix)
+
+
+#below is an original example for the vector and testing sample
+makeVector <- function(x = numeric()) {
+      m <- NULL
+      set <- function(y) {
+            x <<- y
+            m <<- NULL
+      }
+      get <- function() x
+      setmean <- function(mean) m <<- mean
+      getmean <- function() m
+      list(set = set, get = get,
+           setmean = setmean,
+           getmean = getmean)
+}
+
+cachemean <- function(x, ...) {
+      m <- x$getmean()
+      if(!is.null(m)) {
+            message("getting cached data")
+            return(m)
+      }
+      data <- x$get()
+      m <- mean(data, ...)
+      x$setmean(m)
+      m
+}
+x <- makeVector(c(1,3,5,7))
+cachemean(x)
+cachemean(x)
